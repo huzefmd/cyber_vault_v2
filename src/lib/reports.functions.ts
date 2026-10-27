@@ -16,23 +16,22 @@ export const listReports = createServerFn({ method: "GET" })
 
 export const recordReport = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
-    z
+  .handler(async ({ data, context }) => {
+    const validated = z
       .object({
         reportName: z.string().trim().min(1).max(160),
         storagePath: z.string().trim().min(1).max(400),
         fileSize: z.number().int().nonnegative(),
         scanId: z.string().uuid().nullable().optional(),
       })
-      .parse(input),
-  )
-  .handler(async ({ data, context }) => {
+      .parse(data);
+
     const { error } = await context.supabase.from("security_reports").insert({
       user_id: context.userId,
-      report_name: data.reportName,
-      storage_path: data.storagePath,
-      file_size: data.fileSize,
-      scan_id: data.scanId ?? null,
+      report_name: validated.reportName,
+      storage_path: validated.storagePath,
+      file_size: validated.fileSize,
+      scan_id: validated.scanId ?? null,
     });
     if (error) throw new Error("Could not save the report record.");
     return { ok: true };
@@ -40,20 +39,20 @@ export const recordReport = createServerFn({ method: "POST" })
 
 export const deleteReport = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
+    const validated = z.object({ id: z.string().uuid() }).parse(data);
     const { data: row } = await context.supabase
-      .from("security_reports")
+      .from("security-reports")
       .select("storage_path")
-      .eq("id", data.id)
+      .eq("id", validated.id)
       .maybeSingle();
     if (row?.storage_path) {
       await context.supabase.storage.from("security-reports").remove([row.storage_path]);
     }
     const { error } = await context.supabase
-      .from("security_reports")
+      .from("security-reports")
       .delete()
-      .eq("id", data.id)
+      .eq("id", validated.id)
       .eq("user_id", context.userId);
     if (error) throw new Error("Could not delete the report.");
     return { ok: true };

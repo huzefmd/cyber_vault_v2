@@ -9,5 +9,7 @@ const intelSchema = z.object({
 
 export const lookupIntel = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => intelSchema.parse(input))
-  .handler(async ({ data }) => runIntel(data.target));
+  .handler(async ({ data }) => {
+    const validated = intelSchema.parse(data);
+    return runIntel(validated.target);
+  });

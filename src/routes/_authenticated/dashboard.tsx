@@ -29,10 +29,29 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 
 function DashboardPage() {
   const fetchOverview = useServerFn(getOverview);
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["overview"],
     queryFn: () => fetchOverview(),
   });
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center p-12 text-center">
+        <ShieldAlert className="size-12 text-destructive mb-4" />
+        <h2 className="text-xl font-semibold">Failed to load dashboard</h2>
+        <p className="text-muted-foreground mt-2">
+          {error instanceof Error ? error.message : "An unexpected error occurred while fetching your security overview."}
+        </p>
+        <Button
+          variant="outline"
+          className="mt-6"
+          onClick={() => window.location.reload()}
+        >
+          Try again
+        </Button>
+      </div>
+    );
+  }
 
   if (isLoading || !data) {
     return (
@@ -44,7 +63,9 @@ function DashboardPage() {
     );
   }
 
-  const maxRisk = Math.max(1, ...Object.values(data.riskDistribution));
+  const riskDist = data.riskDistribution || {};
+  const maxRisk = Math.max(1, ...Object.values(riskDist));
+
 
   return (
     <div className="space-y-8">

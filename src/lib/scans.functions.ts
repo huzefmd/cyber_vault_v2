@@ -6,17 +6,17 @@ import { buildRecommendations } from "@/lib/recommendations.server";
 
 export const startScan = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => scanRequestSchema.parse(input))
   .handler(async ({ data, context }) => {
+    const validated = scanRequestSchema.parse(data);
     const { supabase, userId } = context;
 
-    const result = await runScan(data.url);
+    const result = await runScan(validated.url);
 
     const { data: scan, error: scanError } = await supabase
       .from("website_scans")
       .insert({
         user_id: userId,
-        saved_website_id: data.savedWebsiteId ?? null,
+        saved_website_id: validated.savedWebsiteId ?? null,
         url: result.url,
         domain: result.domain,
         status: "completed" as const,
@@ -67,11 +67,11 @@ export const startScan = createServerFn({ method: "POST" })
       await supabase.from("ai_recommendations").insert(recommendations);
     }
 
-    if (data.savedWebsiteId) {
+    if (validated.savedWebsiteId) {
       await supabase
         .from("saved_websites")
         .update({ last_scan_id: scan.id })
-        .eq("id", data.savedWebsiteId)
+        .eq("id", validated.savedWebsiteId)
         .eq("user_id", userId);
     }
 

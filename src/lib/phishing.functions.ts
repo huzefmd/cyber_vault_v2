@@ -5,16 +5,16 @@ import { analyzeUrl } from "@/lib/phishing.server";
 
 export const analyzePhishing = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => phishingRequestSchema.parse(input))
   .handler(async ({ data, context }) => {
+    const validated = phishingRequestSchema.parse(data);
     const { supabase, userId } = context;
-    const result = await analyzeUrl(data.url);
+    const result = await analyzeUrl(validated.url);
 
     const { data: row, error } = await supabase
       .from("phishing_scans")
       .insert({
         user_id: userId,
-        url: data.url,
+        url: validated.url,
         classification: result.classification,
         confidence_score: Math.round(result.confidenceScore),
         ai_explanation: result.explanation,

@@ -29,6 +29,11 @@ export const getOverview = createServerFn({ method: "GET" })
         .limit(8),
     ]);
 
+    if (scansRes.error) console.error("Dashboard scans error:", scansRes.error);
+    if (phishingRes.error) console.error("Dashboard phishing error:", phishingRes.error);
+    if (sitesRes.error) console.error("Dashboard sites error:", sitesRes.error);
+    if (recsRes.error) console.error("Dashboard recs error:", recsRes.error);
+
     const scans = scansRes.data ?? [];
     const scores = scans
       .map((s) => s.security_score)
@@ -49,11 +54,15 @@ export const getOverview = createServerFn({ method: "GET" })
         ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)
         : null,
       riskDistribution: severityCounts,
-      trend: scans
+      trend: (scans || [])
         .slice(0, 12)
         .reverse()
-        .map((s) => ({ date: s.created_at, score: s.security_score ?? 0, domain: s.domain })),
-      recentScans: scans.slice(0, 8),
+        .map((s) => ({
+          date: s?.created_at ?? new Date().toISOString(),
+          score: s?.security_score ?? 0,
+          domain: s?.domain ?? "Unknown"
+        })),
+      recentScans: (scans || []).slice(0, 8),
       recentPhishing: (phishingRes.data ?? []).slice(0, 6),
       recommendations: recsRes.data ?? [],
     };
@@ -73,19 +82,19 @@ export const listScans = createServerFn({ method: "GET" })
 
 export const getScanDetail = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => idSchema.parse(input))
   .handler(async ({ data, context }) => {
+    const validatedInput = idSchema.parse(data);
     const { supabase } = context;
     const [scanRes, findingsRes, eventsRes] = await Promise.all([
-      supabase.from("website_scans").select("*").eq("id", data.id).maybeSingle(),
+      supabase.from("website_scans").select("*").eq("id", validatedInput.id).maybeSingle(),
       supabase
         .from("security_findings")
         .select("id, category, title, description, severity, evidence, recommendation")
-        .eq("scan_id", data.id),
+        .eq("scan_id", validatedInput.id),
       supabase
         .from("scan_events")
         .select("id, event_type, message, created_at")
-        .eq("scan_id", data.id)
+        .eq("scan_id", validatedInput.id)
         .order("created_at", { ascending: true }),
     ]);
 
@@ -113,12 +122,12 @@ export const listPhishingScans = createServerFn({ method: "GET" })
 
 export const completeRecommendation = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => idSchema.extend({ completed: z.boolean() }).parse(input))
   .handler(async ({ data, context }) => {
+    const validated = idSchema.extend({ completed: z.boolean() }).parse(data);
     const { error } = await context.supabase
       .from("ai_recommendations")
-      .update({ is_completed: data.completed })
-      .eq("id", data.id)
+      .update({ is_completed: validated.completed })
+      .eq("id", validated.id)
       .eq("user_id", context.userId);
     if (error) throw new Error("Could not update the task.");
     return { ok: true };

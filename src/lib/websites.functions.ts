@@ -18,14 +18,14 @@ export const listWebsites = createServerFn({ method: "GET" })
 
 export const addWebsite = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => savedWebsiteSchema.parse(input))
   .handler(async ({ data, context }) => {
+    const validated = savedWebsiteSchema.parse(data);
     const { error } = await context.supabase.from("saved_websites").insert({
       user_id: context.userId,
-      name: data.name,
-      url: data.url,
-      domain: toDomain(data.url),
-      monitoring_enabled: data.monitoringEnabled,
+      name: validated.name,
+      url: validated.url,
+      domain: toDomain(validated.url),
+      monitoring_enabled: validated.monitoringEnabled,
     });
     if (error) throw new Error("Could not save this website.");
     return { ok: true };
@@ -33,12 +33,12 @@ export const addWebsite = createServerFn({ method: "POST" })
 
 export const removeWebsite = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => idSchema.parse(input))
   .handler(async ({ data, context }) => {
+    const validated = idSchema.parse(data);
     const { error } = await context.supabase
       .from("saved_websites")
       .delete()
-      .eq("id", data.id)
+      .eq("id", validated.id)
       .eq("user_id", context.userId);
     if (error) throw new Error("Could not remove this website.");
     return { ok: true };
@@ -46,14 +46,12 @@ export const removeWebsite = createServerFn({ method: "POST" })
 
 export const toggleMonitoring = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
-    idSchema.extend({ enabled: z.boolean() }).parse(input),
-  )
   .handler(async ({ data, context }) => {
+    const validated = idSchema.extend({ enabled: z.boolean() }).parse(data);
     const { error } = await context.supabase
       .from("saved_websites")
-      .update({ monitoring_enabled: data.enabled })
-      .eq("id", data.id)
+      .update({ monitoring_enabled: validated.enabled })
+      .eq("id", validated.id)
       .eq("user_id", context.userId);
     if (error) throw new Error("Could not update monitoring.");
     return { ok: true };
