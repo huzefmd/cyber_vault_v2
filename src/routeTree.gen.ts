@@ -11,15 +11,17 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as PhishingRouteImport } from './routes/phishing'
+import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as ReportsRouteImport } from './routes/reports'
+import { Route as ScannerRouteImport } from './routes/scanner'
 import { Route as AuthenticatedBulkRouteImport } from './routes/_authenticated/bulk'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedHistoryRouteImport } from './routes/_authenticated/history'
 import { Route as AuthenticatedIntelRouteImport } from './routes/_authenticated/intel'
-import { Route as AuthenticatedPhishingRouteImport } from './routes/_authenticated/phishing'
 import { Route as AuthenticatedQrRouteImport } from './routes/_authenticated/qr'
-import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
-import { Route as AuthenticatedScannerRouteImport } from './routes/_authenticated/scanner'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedWebsitesRouteImport } from './routes/_authenticated/websites'
 
@@ -32,9 +34,34 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AnalyticsRoute = AnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PhishingRoute = PhishingRouteImport.update({
+  id: '/phishing',
+  path: '/phishing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportsRoute = ReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScannerRoute = ScannerRouteImport.update({
+  id: '/scanner',
+  path: '/scanner',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedBulkRoute = AuthenticatedBulkRouteImport.update({
@@ -57,24 +84,9 @@ const AuthenticatedIntelRoute = AuthenticatedIntelRouteImport.update({
   path: '/intel',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedPhishingRoute = AuthenticatedPhishingRouteImport.update({
-  id: '/phishing',
-  path: '/phishing',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedQrRoute = AuthenticatedQrRouteImport.update({
   id: '/qr',
   path: '/qr',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedReportsRoute = AuthenticatedReportsRouteImport.update({
-  id: '/reports',
-  path: '/reports',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedScannerRoute = AuthenticatedScannerRouteImport.update({
-  id: '/scanner',
-  path: '/scanner',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
@@ -90,29 +102,33 @@ const AuthenticatedWebsitesRoute = AuthenticatedWebsitesRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/analytics': typeof AnalyticsRoute
   '/auth': typeof AuthRoute
+  '/phishing': typeof PhishingRoute
+  '/pricing': typeof PricingRoute
+  '/reports': typeof ReportsRoute
+  '/scanner': typeof ScannerRoute
   '/bulk': typeof AuthenticatedBulkRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/history': typeof AuthenticatedHistoryRoute
   '/intel': typeof AuthenticatedIntelRoute
-  '/phishing': typeof AuthenticatedPhishingRoute
   '/qr': typeof AuthenticatedQrRoute
-  '/reports': typeof AuthenticatedReportsRoute
-  '/scanner': typeof AuthenticatedScannerRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/websites': typeof AuthenticatedWebsitesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/analytics': typeof AnalyticsRoute
   '/auth': typeof AuthRoute
+  '/phishing': typeof PhishingRoute
+  '/pricing': typeof PricingRoute
+  '/reports': typeof ReportsRoute
+  '/scanner': typeof ScannerRoute
   '/bulk': typeof AuthenticatedBulkRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/history': typeof AuthenticatedHistoryRoute
   '/intel': typeof AuthenticatedIntelRoute
-  '/phishing': typeof AuthenticatedPhishingRoute
   '/qr': typeof AuthenticatedQrRoute
-  '/reports': typeof AuthenticatedReportsRoute
-  '/scanner': typeof AuthenticatedScannerRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/websites': typeof AuthenticatedWebsitesRoute
 }
@@ -120,15 +136,17 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/analytics': typeof AnalyticsRoute
   '/auth': typeof AuthRoute
+  '/phishing': typeof PhishingRoute
+  '/pricing': typeof PricingRoute
+  '/reports': typeof ReportsRoute
+  '/scanner': typeof ScannerRoute
   '/_authenticated/bulk': typeof AuthenticatedBulkRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/history': typeof AuthenticatedHistoryRoute
   '/_authenticated/intel': typeof AuthenticatedIntelRoute
-  '/_authenticated/phishing': typeof AuthenticatedPhishingRoute
   '/_authenticated/qr': typeof AuthenticatedQrRoute
-  '/_authenticated/reports': typeof AuthenticatedReportsRoute
-  '/_authenticated/scanner': typeof AuthenticatedScannerRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/websites': typeof AuthenticatedWebsitesRoute
 }
@@ -136,44 +154,50 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/analytics'
     | '/auth'
+    | '/phishing'
+    | '/pricing'
+    | '/reports'
+    | '/scanner'
     | '/bulk'
     | '/dashboard'
     | '/history'
     | '/intel'
-    | '/phishing'
     | '/qr'
-    | '/reports'
-    | '/scanner'
     | '/settings'
     | '/websites'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/analytics'
     | '/auth'
+    | '/phishing'
+    | '/pricing'
+    | '/reports'
+    | '/scanner'
     | '/bulk'
     | '/dashboard'
     | '/history'
     | '/intel'
-    | '/phishing'
     | '/qr'
-    | '/reports'
-    | '/scanner'
     | '/settings'
     | '/websites'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/analytics'
     | '/auth'
+    | '/phishing'
+    | '/pricing'
+    | '/reports'
+    | '/scanner'
     | '/_authenticated/bulk'
     | '/_authenticated/dashboard'
     | '/_authenticated/history'
     | '/_authenticated/intel'
-    | '/_authenticated/phishing'
     | '/_authenticated/qr'
-    | '/_authenticated/reports'
-    | '/_authenticated/scanner'
     | '/_authenticated/settings'
     | '/_authenticated/websites'
   fileRoutesById: FileRoutesById
@@ -181,7 +205,12 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AnalyticsRoute: typeof AnalyticsRoute
   AuthRoute: typeof AuthRoute
+  PhishingRoute: typeof PhishingRoute
+  PricingRoute: typeof PricingRoute
+  ReportsRoute: typeof ReportsRoute
+  ScannerRoute: typeof ScannerRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -200,11 +229,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/analytics': {
+      id: '/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/phishing': {
+      id: '/phishing'
+      path: '/phishing'
+      fullPath: '/phishing'
+      preLoaderRoute: typeof PhishingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reports': {
+      id: '/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof ReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/scanner': {
+      id: '/scanner'
+      path: '/scanner'
+      fullPath: '/scanner'
+      preLoaderRoute: typeof ScannerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/bulk': {
@@ -235,32 +299,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedIntelRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/phishing': {
-      id: '/_authenticated/phishing'
-      path: '/phishing'
-      fullPath: '/phishing'
-      preLoaderRoute: typeof AuthenticatedPhishingRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/qr': {
       id: '/_authenticated/qr'
       path: '/qr'
       fullPath: '/qr'
       preLoaderRoute: typeof AuthenticatedQrRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/reports': {
-      id: '/_authenticated/reports'
-      path: '/reports'
-      fullPath: '/reports'
-      preLoaderRoute: typeof AuthenticatedReportsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/scanner': {
-      id: '/_authenticated/scanner'
-      path: '/scanner'
-      fullPath: '/scanner'
-      preLoaderRoute: typeof AuthenticatedScannerRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/settings': {
@@ -285,10 +328,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedHistoryRoute: typeof AuthenticatedHistoryRoute
   AuthenticatedIntelRoute: typeof AuthenticatedIntelRoute
-  AuthenticatedPhishingRoute: typeof AuthenticatedPhishingRoute
   AuthenticatedQrRoute: typeof AuthenticatedQrRoute
-  AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
-  AuthenticatedScannerRoute: typeof AuthenticatedScannerRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedWebsitesRoute: typeof AuthenticatedWebsitesRoute
 }
@@ -298,10 +338,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedHistoryRoute: AuthenticatedHistoryRoute,
   AuthenticatedIntelRoute: AuthenticatedIntelRoute,
-  AuthenticatedPhishingRoute: AuthenticatedPhishingRoute,
   AuthenticatedQrRoute: AuthenticatedQrRoute,
-  AuthenticatedReportsRoute: AuthenticatedReportsRoute,
-  AuthenticatedScannerRoute: AuthenticatedScannerRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedWebsitesRoute: AuthenticatedWebsitesRoute,
 }
@@ -312,7 +349,12 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AnalyticsRoute: AnalyticsRoute,
   AuthRoute: AuthRoute,
+  PhishingRoute: PhishingRoute,
+  PricingRoute: PricingRoute,
+  ReportsRoute: ReportsRoute,
+  ScannerRoute: ScannerRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
